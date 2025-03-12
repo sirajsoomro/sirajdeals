@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+.textplace{
+  width: 400px;
+  height: 50px;
+  font-size: 15px;
+  color: rgb(240, 230, 230);
+  text-decoration: none;
+}
+
+body{
+  font-family: sans-serif;
+  background-color: rgb(58, 34, 47);
+}
+#productbox{
+  box-shadow: 0 10px 20px rgba(252, 247, 247, 0.1)
+}
+
+nav{
+  background-color: rgb(58, 34, 47);
+  box-shadow: 0 8px 10px rgba(155, 129, 129, 0.1)
+}
