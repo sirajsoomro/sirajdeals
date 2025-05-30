@@ -1,48 +1,38 @@
 "use client"
 import React, { useState } from 'react'
-import Link from 'next/link'
-
 const portal = () => {
     const [isOpen, setIsOpen] = useState(false)
-
+    // const [inputvalue , setinputvalue] = useState()
+    const products = JSON.parse(localStorage.getItem("products")) || []
     function allDeta() {
-        let userName =document.getElementById('name').value
-        let imageSrc =document.getElementById('images').value
-        let price =document.getElementById('price').value
-        let discription =document.getElementById('discription').value
+        let userName = document.getElementById('name').value
+        let imageSrc = document.getElementById('images').value
+        let price = document.getElementById('price').value
+        let discription = document.getElementById('discription').value
 
-        console.log('Name :' , userName);
-        console.log("product images :" , imageSrc);
-        console.log("price :" ,price);
-        console.log("discription :" ,discription);  
+        let product = {
+            name: userName,
+            image: imageSrc,
+            price: price,
+            description: discription
+        };
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+
+        products.push(product);
+        localStorage.setItem("products", JSON.stringify(products));
+        console.log("Data saved to local storage:", product);
+        document.getElementById('name').value = "";
+        document.getElementById('images').value = "";
+        document.getElementById('price').value = "";
+        document.getElementById('discription').value = "";
     };
-
+    function deleteProduct(index) {
+        const products = JSON.parse(localStorage.getItem("products")) || [];
+        products.splice(index, 1);
+        localStorage.setItem("products", JSON.stringify(products));
+        window.location.reload(); 
 
     const adminDeta = [
-        {
-            image: "watch.png",
-            name: "watch rolex",
-            price: 99.99,
-            description: "High-quality wireless headphones with noise cancellation.",
-        },
-        {
-            image: "watch.png",
-            name: "watch rolex",
-            price: 99.99,
-            description: "High-quality wireless headphones with noise cancellation.",
-        },
-        {
-            image: "watch.png",
-            name: "watch rolex",
-            price: 99.99,
-            description: "High-quality wireless headphones with noise cancellation.",
-        },
-        {
-            image: "watch.png",
-            name: "watch rolex",
-            price: 99.99,
-            description: "High-quality wireless headphones with noise cancellation.",
-        },
         {
             image: "watch.png",
             name: "watch rolex",
@@ -53,7 +43,7 @@ const portal = () => {
 
     return (
         <div className='flex'>
-            <div className='w-96 bg-amber-500'>
+            <div className='w-96  bg-amber-500'>
                 <h1 className='text-white text-3xl ml-6 mt-6'>Admin Portal</h1>
                 <div className='mt-5 ml-6'>
                     <button className='text-2xl cursor-pointer text-black'>product</button>
@@ -64,7 +54,6 @@ const portal = () => {
             <div className='bg-white w-full h-screen'>
                 <h1 className='text-3xl ml-6 mt-6 font-bold'>Product Management</h1>
                 <button className='mt-5 text-2xl ml-6 rounded bg-blue-500 text-white p-3 cursor-pointer' onClick={() => setIsOpen(true)}>Add product</button>
-
                 <div className={`fixed inset-0 bg-black/30 bg-opacity-50 backdrop-blur-md flex items-center justify-center ${isOpen ? "flex" : "hidden"}`}>
                     <div className='bg-white p-6 rounded-lg shadow-lg w-1-2 px-20 '>
                         <h1 className='text-3xl mt-2 font-bold'>Add Product</h1>
@@ -95,21 +84,21 @@ const portal = () => {
                             <th className="p-3 border">Actions</th>
                         </tr>
                     </tbody>
-
                     <tbody>
-                        {adminDeta.map((product, index) => (
+                        {products.length >= 1 ? (products.map((product, index) => (
                             <tr key={index} className="border">
-                                <td className="p-3 border`"><img src={product.image} alt="Product" className="cursor-pointer rounded-md m-auto h-11 w-10" /></td>
+                                <td className="p-3 border"><img src={product.image || "watch.png"} alt="Product" className="cursor-pointer rounded-md m-auto h-11 w-10" /></td>
                                 <td className="p-3 border">{product.name}</td>
                                 <td className="p-3 border">{product.price}</td>
                                 <td className="p-3 border">{product.description}</td>
                                 <td className="p-3 border flex gap-2">
                                     <button className="bg-green-500 cursor-pointer text-white px-3 py-1 rounded">Edit</button>
-                                    <button className="bg-red-500 cursor-pointer text-white px-3 py-3 rounded">Delete</button>
+                                    <button onClick={() => deleteProduct(index)} className="bg-red-500 cursor-pointer text-white px-3 py-3 rounded">Delete</button>
                                 </td>
                             </tr>
-                        ))
-                        }
+                        ))) : (
+                            <h1> no products found</h1>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -117,4 +106,4 @@ const portal = () => {
     )
 }
 
-export default portal 
+export default portal
