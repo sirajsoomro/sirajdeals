@@ -1,6 +1,6 @@
 'use client'
-
-import React from 'react'
+import { db } from "@/lib/firebase";
+import React, { useState } from 'react'
 import { useParams } from 'next/navigation'
 
 export default function ProductPage() {
@@ -27,7 +27,7 @@ export default function ProductPage() {
               <span className="px-3 text-white">1</span>
               <button className="text-xl px-2 text-white">+</button>
             </div>
-            <button className="flex items-center gap-2 bg-indigo-100 text-indigo-700 font-medium px-5 py-2 rounded-full hover:bg-indigo-200 transition">Add to cart</button>
+            <button  className="flex items-center gap-2 bg-indigo-100 text-indigo-700 font-medium px-5 py-2 rounded-full hover:bg-indigo-200 transition"> Add to cart</button>
           </div>
           <button className="w-full bg-indigo-600 text-white py-3 rounded-full font-semibold text-lg hover:bg-indigo-700 transition">Buy Now</button>
         </div>
