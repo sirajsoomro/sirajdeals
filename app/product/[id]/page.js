@@ -1,5 +1,4 @@
 'use client'
-import { db } from "@/lib/firebase";
 import React, { useState } from 'react'
 import { useParams } from 'next/navigation'
 
@@ -7,31 +6,71 @@ export default function ProductPage() {
   const { id } = useParams();
   const [rawName, rawPrice, rawDescription, rawImgSrc] = id ? id.split('_') : ["", "", "", ""];
   const name = decodeURIComponent(rawName);
-  const price = rawPrice;
+  const price = Number(rawPrice);
   const description = decodeURIComponent(rawDescription);
   const imgSrc = decodeURIComponent(rawImgSrc);
 
+  const [quantity, setQuantity] = useState(1);
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+
+  const increment = () => setQuantity((prev) => prev + 1);
+  const decrement = () => {
+    if (quantity > 1) setQuantity((prev) => prev - 1);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden break-words w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl w-full bg-[#3A222F] rounded-2xl p-8 shadow-xl">
-        <div className="w-full">
-        <img src={imgSrc} alt={name} className="w-full h-[400px] object-contain rounded-3xl" />
-        </div>
-        <div className="flex flex-col justify-center space-y-4">
-          <h1 className="text-3xl font-bold text-white">{name}</h1>
-          <p className="text-orange-500 text-2xl font-semibold">PKR {price}</p>
+    <>
+      <div className="min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden break-words w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl w-full bg-[#3A222F] rounded-2xl p-8 shadow-xl">
+          <div className="w-full">
+            <img src={imgSrc} alt={name} className="w-full h-[400px] object-contain rounded" />
+          </div>
+          <div className="flex flex-col justify-center space-y-4">
+            <h1 className="text-3xl font-bold text-white">{name}</h1>
+            <p className="text-orange-500 text-2xl font-semibold">PKR {price}</p>
             <p className="text-gray-300 leading-relaxed text-sm sm:text-base md:text-lg max-w-full sm:max-w-md">{description}</p>
             <div className="flex items-center gap-4 mt-4">
-            <div className="flex items-center border rounded-full px-3 py-1">
-              <button className="text-xl px-2 text-white">−</button>
-              <span className="px-3 text-white">1</span>
-              <button className="text-xl px-2 text-white">+</button>
+              <div className="flex items-center border rounded-full px-3 py-1">
+                <button onClick={decrement} className="text-xl px-2 text-white">−</button>
+                <span className="px-3 text-white">{quantity}</span>
+                <button onClick={increment} className="text-xl px-2 text-white">+</button>
+              </div>
+              <button
+                onClick={() => alert(`Added ${quantity} item(s) to cart`)}
+                className="flex items-center gap-2 bg-indigo-100 text-indigo-700 font-medium px-5 py-2 rounded-full hover:bg-indigo-200 transition"
+              >Add to cart</button>
             </div>
-            <button  className="flex items-center gap-2 bg-indigo-100 text-indigo-700 font-medium px-5 py-2 rounded-full hover:bg-indigo-200 transition"> Add to cart</button>
+            <button
+              onClick={() => setShowCheckoutForm(true)}
+              className="w-full bg-indigo-600 text-white py-3 rounded-full font-semibold text-lg hover:bg-indigo-700 transition"
+            >Buy Now</button>
           </div>
-          <button className="w-full bg-indigo-600 text-white py-3 rounded-full font-semibold text-lg hover:bg-indigo-700 transition">Buy Now</button>
         </div>
       </div>
-    </div>
-  );
+      {showCheckoutForm && (
+        <>
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" onClick={() => setShowCheckoutForm(false)}></div>
+          <div className="fixed inset-0 z-50 flex justify-center items-center">
+            <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-md relative">
+              <button onClick={() => setShowCheckoutForm(false)} className="absolute top-3 right-3 text-gray-500 text-xl font-bold hover:text-red-500">×</button>
+              <h2 className="text-2xl font-bold mb-4 text-center">Checkout</h2>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  alert("Order placed successfully!")
+                  setShowCheckoutForm(false)
+                }}className="space-y-4">
+                <input type="text" placeholder="Full Name" required className="w-full border border-gray-300 p-2 rounded" />
+                <input type="email" placeholder="Email Address" required className="w-full border border-gray-300 p-2 rounded" />
+                <input type="tel" placeholder="Phone Number" required className="w-full border border-gray-300 p-2 rounded" />
+                <input type="text" placeholder="City" required className="w-full border border-gray-300 p-2 rounded" />
+                <textarea placeholder="Full Address" required className="w-full border border-gray-300 p-2 rounded" rows={3}></textarea>
+                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">Submit Order</button>
+              </form>
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  )
 }

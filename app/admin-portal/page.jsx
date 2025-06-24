@@ -6,7 +6,7 @@ import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from "firebase
 const Portal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState([]);
-  const [editProductId, setEditProductId] = useState(null); // 🆕 edit mode handle
+  const [editProductId, setEditProductId] = useState(null); 
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -39,14 +39,12 @@ const Portal = () => {
         setProducts([...products, { id: docRef.id, ...productData }]);
         alert("Product added!");
       }
-
-      // Clear form
       document.getElementById('name').value = "";
       document.getElementById('images').value = "";
       document.getElementById('price').value = "";
       document.getElementById('discription').value = "";
       setIsOpen(false);
-      setEditProductId(null); // reset edit mode
+      setEditProductId(null); 
     } catch (error) {
       console.error("Error saving product:", error);
     }
@@ -63,7 +61,6 @@ const Portal = () => {
 
   return (
     <div className='flex'>
-      {/* Sidebar */}
       <div className='w-96 bg-amber-500'>
         <h1 className='text-white text-3xl ml-6 mt-6'>Admin Portal</h1>
         <div className='mt-5 ml-6'>
@@ -72,21 +69,19 @@ const Portal = () => {
           <button className='mt-3 cursor-pointer text-2xl text-black'>setting</button>
         </div>
       </div>
-      {/* Main content */}
       <div className='bg-white w-full h-screen'>
         <h1 className='text-3xl ml-6 mt-6 font-bold'>Product Management</h1>
         <button
           className='mt-5 text-2xl ml-6 rounded bg-blue-500 text-white p-3 cursor-pointer'
           onClick={() => {
             setIsOpen(true);
-            setEditProductId(null); // ensure it's not in edit mode
+            setEditProductId(null); 
             document.getElementById('name').value = "";
             document.getElementById('images').value = "";
             document.getElementById('price').value = "";
             document.getElementById('discription').value = "";
           }}>
           Add product</button>
-        {/* Modal */}
         <div className={`fixed inset-0 bg-black/30 bg-opacity-50 backdrop-blur-md flex items-center justify-center ${isOpen ? "flex" : "hidden"}`}>
           <div className='bg-white p-6 rounded-lg shadow-lg w-1-2 px-20 '>
             <h1 className='text-3xl mt-2 font-bold'>{editProductId ? "Edit Product" : "Add Product"}</h1>
@@ -110,7 +105,6 @@ const Portal = () => {
             </button>
           </div>
         </div>
-        {/* Product Table */}
         <table className="mt-10 w-full text-left">
           <thead>
             <tr className="bg-gray-200">
