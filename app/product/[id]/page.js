@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 
 export default function ProductPage() {
@@ -17,6 +17,26 @@ export default function ProductPage() {
   const decrement = () => {
     if (quantity > 1) setQuantity((prev) => prev - 1);
   };
+
+  // Dummy cart data for single product checkout
+  const DELIVERY_CHARGE = 300;
+  const subtotal = price * quantity;
+  const grandTotal = subtotal + DELIVERY_CHARGE;
+
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    // Load initial item into cartItems for email
+    setCartItems([
+      {
+        name,
+        price,
+        quantity,
+        total: price * quantity,
+        image: imgSrc,
+      }
+    ]);
+  }, [name, price, quantity, imgSrc]);
 
   return (
     <>
@@ -47,6 +67,7 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
+
       {showCheckoutForm && (
         <>
           <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" onClick={() => setShowCheckoutForm(false)}></div>
@@ -55,16 +76,50 @@ export default function ProductPage() {
               <button onClick={() => setShowCheckoutForm(false)} className="absolute top-3 right-3 text-gray-500 text-xl font-bold hover:text-red-500">×</button>
               <h2 className="text-2xl font-bold mb-4 text-center">Checkout</h2>
               <form
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  alert("Order placed successfully!")
-                  setShowCheckoutForm(false)
-                }}className="space-y-4">
-                <input type="text" placeholder="Full Name" required className="w-full border border-gray-300 p-2 rounded" />
-                <input type="email" placeholder="Email Address" required className="w-full border border-gray-300 p-2 rounded" />
-                <input type="tel" placeholder="Phone Number" required className="w-full border border-gray-300 p-2 rounded" />
-                <input type="text" placeholder="City" required className="w-full border border-gray-300 p-2 rounded" />
-                <textarea placeholder="Full Address" required className="w-full border border-gray-300 p-2 rounded" rows={3}></textarea>
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.target;
+                  const formData = new FormData(form);
+
+                  const order = {
+                    name: formData.get("name"),
+                    email: formData.get("email"),
+                    phone: formData.get("phone"),
+                    city: formData.get("city"),
+                    address: formData.get("address"),
+                    cartItems,
+                    subtotal,
+                    delivery: DELIVERY_CHARGE,
+                    total: grandTotal,
+                  };
+
+                  try {
+                    const res = await fetch("/api/send-order", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(order),
+                    });
+
+                    if (res.ok) {
+                      alert("Order place hogaya aur email send hogayi!");
+                      setShowCheckoutForm(false);
+                      setCartItems([]);
+                      localStorage.removeItem("cartItems");
+                    } else {
+                      alert("Email bhejne mein masla aya.");
+                    }
+                  } catch (error) {
+                    console.error("Email error:", error);
+                    alert("Kuch ghalat hogaya. Try again.");
+                  }
+                }}
+                className="space-y-4"
+              >
+                <input name="name" type="text" placeholder="Full Name" required className="w-full border border-gray-300 p-2 rounded" />
+                <input name="email" type="email" placeholder="Email Address" required className="w-full border border-gray-300 p-2 rounded" />
+                <input name="phone" type="tel" placeholder="Phone Number" required className="w-full border border-gray-300 p-2 rounded" />
+                <input name="city" type="text" placeholder="City" required className="w-full border border-gray-300 p-2 rounded" />
+                <textarea name="address" placeholder="Full Address" required className="w-full border border-gray-300 p-2 rounded" rows={3}></textarea>
                 <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">Submit Order</button>
               </form>
             </div>
