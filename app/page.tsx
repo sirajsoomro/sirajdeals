@@ -11,20 +11,17 @@ interface Product {
   description: string;
   price: number;
   imgSrc: string;
-}
-
-interface CartItem extends Product {
-  quantity: number;
+  quantity?: number; // Optional quantity
 }
 
 const NavbarAndProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
 
-  const DELIVERY_CHARGE = 250;
+  const DELIVERY_CHARGE = 200;
 
   useEffect(() => {
     const stored = localStorage.getItem("cartItems");
@@ -59,21 +56,22 @@ const NavbarAndProducts = () => {
   }, []);
 
   const filteredProducts = useMemo(() => {
-    return products.filter(product =>
+    return products.filter((product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, products]);
 
   const addToCart = (product: Product) => {
-    setCartItems(prev => {
-      const existingIndex = prev.findIndex(item => item.id === product.id);
+    setCartItems((prev) => {
+      const existingIndex = prev.findIndex((item) => item.id === product.id);
       if (existingIndex !== -1) {
         const updated = [...prev];
-        updated[existingIndex].quantity += 1;
+        updated[existingIndex].quantity = (updated[existingIndex].quantity || 1) + 1;
         return updated;
+      } else {
+        return [...prev, { ...product, quantity: 1 }];
       }
-      return [...prev, { ...product, quantity: 1 }];
     });
   };
 
@@ -85,36 +83,32 @@ const NavbarAndProducts = () => {
 
   const increaseQuantity = (index: number) => {
     const updated = [...cartItems];
-    updated[index].quantity += 1;
+    updated[index].quantity = (updated[index].quantity || 1) + 1;
     setCartItems(updated);
   };
 
   const decreaseQuantity = (index: number) => {
     const updated = [...cartItems];
-    if (updated[index].quantity > 1) {
-      updated[index].quantity -= 1;
+    if ((updated[index].quantity || 1) > 1) {
+      updated[index].quantity! -= 1;
+      setCartItems(updated);
     } else {
-      updated.splice(index, 1);
+      removeFromCart(index);
     }
-    setCartItems(updated);
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * (item.quantity || 1), 0);
   const grandTotal = subtotal + DELIVERY_CHARGE;
-
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+  <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
   <div className="w-[95%] mx-auto flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 gap-2 sm:gap-0">
-    {/* Logo + Brand */}
     <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
       <div className="flex items-center gap-2">
         <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-10 w-8 sm:h-14 sm:w-9" />
         <span className="text-xl sm:text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
       </div>
     </div>
-
-    {/* Search + Filter */}
     <div className="flex items-center gap-2 w-full sm:w-auto">
       <input
         type="text"
@@ -123,13 +117,14 @@ const NavbarAndProducts = () => {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="textplace border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
       />
-      {/* Hide filter button on mobile */}
       <button className="hidden sm:block bg-blue-400 text-black px-4 py-2 rounded-lg hover:bg-gray-200 duration-300 ease-in">
         Price Filter
       </button>
     </div>
   </div>
 </nav>
+
+
 
       <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
         {filteredProducts.map((product) => (
@@ -219,21 +214,22 @@ const NavbarAndProducts = () => {
                   <div className="flex-1">
                     <p className="font-semibold text-sm line-clamp-1">{item.name}</p>
                     <p className="text-xs text-gray-500 mt-1">{item.price} PKR</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        onClick={() => decreaseQuantity(idx)}
-                        className="px-2 py-1 bg-white border rounded-md text-sm"
-                      >
-                        -
-                      </button>
-                      <span className="text-sm">{item.quantity || 1}</span>
-                      <button
-                        onClick={() => increaseQuantity(idx)}
-                        className="px-2 py-1 bg-white border rounded-md text-sm"
-                      >
-                        +
-                      </button>
-                    </div>
+                    {/* Quantity Controls */}
+<div className="flex items-center gap-2 mt-2">
+  <button
+    onClick={() => decreaseQuantity(idx)}
+    className="px-2 py-1 bg-white border rounded-md text-sm"
+  >
+    -
+  </button>
+  <span className="text-sm">{item.quantity || 1}</span>
+  <button
+    onClick={() => increaseQuantity(idx)}
+    className="px-2 py-1 bg-white border rounded-md text-sm"
+  >
+    +
+  </button>
+</div>
 
                     <button onClick={() => removeFromCart(idx)} className="text-red-500 text-xs mt-2 hover:underline">
                       Remove
