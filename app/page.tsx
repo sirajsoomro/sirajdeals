@@ -13,14 +13,18 @@ interface Product {
   imgSrc: string;
 }
 
+interface CartItem extends Product {
+  quantity: number;
+}
+
 const NavbarAndProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
 
-  const DELIVERY_CHARGE = 200;
+  const DELIVERY_CHARGE = 250;
 
   useEffect(() => {
     const stored = localStorage.getItem("cartItems");
@@ -54,28 +58,50 @@ const NavbarAndProducts = () => {
     fetchProducts();
   }, []);
 
-  // 👇 rest of your component remains the same
-
-
   const filteredProducts = useMemo(() => {
     return products.filter(product =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }, [searchQuery, products])
+    );
+  }, [searchQuery, products]);
 
   const addToCart = (product: Product) => {
-    setCartItems(prev => [...prev, product])
-  }
+    setCartItems(prev => {
+      const existingIndex = prev.findIndex(item => item.id === product.id);
+      if (existingIndex !== -1) {
+        const updated = [...prev];
+        updated[existingIndex].quantity += 1;
+        return updated;
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  };
 
   const removeFromCart = (index: number) => {
-    const updated = [...cartItems]
-    updated.splice(index, 1)
-    setCartItems(updated)
-  }
+    const updated = [...cartItems];
+    updated.splice(index, 1);
+    setCartItems(updated);
+  };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0)
-  const grandTotal = subtotal + DELIVERY_CHARGE
+  const increaseQuantity = (index: number) => {
+    const updated = [...cartItems];
+    updated[index].quantity += 1;
+    setCartItems(updated);
+  };
+
+  const decreaseQuantity = (index: number) => {
+    const updated = [...cartItems];
+    if (updated[index].quantity > 1) {
+      updated[index].quantity -= 1;
+    } else {
+      updated.splice(index, 1);
+    }
+    setCartItems(updated);
+  };
+
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const grandTotal = subtotal + DELIVERY_CHARGE;
+
   return (
     <>
       <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
@@ -84,6 +110,7 @@ const NavbarAndProducts = () => {
             <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-14 w-9" />
             <span className="text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
           </div>
+
           <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
             <input
               type="text"
@@ -92,58 +119,56 @@ const NavbarAndProducts = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="textplace border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
             />
-            <button className="bg-blue-400 text-black px-4 py-3 rounded-lg hover:bg-gray-200 duration-300 ease-in w-full sm:w-auto">
+            <button className="bg-blue-400 text-black px-4 py-3 rounded-lg hover:bg-gray-200 duration-300 ease-in hidden sm:block">
               Price Filter
             </button>
           </div>
         </div>
       </nav>
-
-
-<div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
-  {filteredProducts.map((product) => (
-    <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
-      <div className="flex-grow">
-        <div className="flex justify-center mb-4">
-          <div className="w-[200] h-[180px] relative overflow-hidden rounded-md">
-            {product.imgSrc ? (
-               <Image
-      src={product.imgSrc}
-      alt={product.name}
-      width={100}
-      height={180}
-      layout="responsive"
-      objectFit="contain"
-      className="rounded-md w-28"
-    />
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded-md">
-                No Image
+      <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
+        {filteredProducts.map((product) => (
+          <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
+            <div className="flex-grow">
+              <div className="flex justify-center mb-4">
+                <div className="w-[200] h-[180px] relative overflow-hidden rounded-md">
+                  {product.imgSrc ? (
+                    <Image
+                      src={product.imgSrc}
+                      alt={product.name}
+                      width={100}
+                      height={180}
+                      layout="responsive"
+                      objectFit="contain"
+                      className="rounded-md w-28"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded-md">
+                      No Image
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
+              <h2 className="text-white font-bold text-lg text-center">{product.name}</h2>
+              <p className="text-sm text-gray-100 text-center mt-2 line-clamp-2">{product.description}</p>
+              <p className="text-orange-400 font-bold text-lg mt-2 text-center">PKR: {product.price}</p>
+            </div>
+            <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+              <Link
+                href={`/product/${encodeURIComponent(product.name)}_${product.price}_${encodeURIComponent(product.description)}_${encodeURIComponent(product.imgSrc)}`}
+                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
+              >
+                Details
+              </Link>
+              <button
+                onClick={() => addToCart(product)}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto"
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
-        </div>
-        <h2 className="text-white font-bold text-lg text-center">{product.name}</h2>
-        <p className="text-sm text-gray-100 text-center mt-2 line-clamp-2">{product.description}</p>
-        <p className="text-orange-400 font-bold text-lg mt-2 text-center">PKR: {product.price}</p>
+        ))}
       </div>
-      <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-        <Link
-          href={`/product/${encodeURIComponent(product.name)}_${product.price}_${encodeURIComponent(product.description)}_${encodeURIComponent(product.imgSrc)}`}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
-        >
-          Details
-        </Link>
-        <button
-          onClick={() => addToCart(product)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto"
-        >
-          Add to Cart
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
 
       <button
         onClick={() => setShowCart(true)}
@@ -171,54 +196,75 @@ const NavbarAndProducts = () => {
           <>
             <ul className="space-y-4">
               {cartItems.map((item, idx) => (
-                <li key={idx} className="flex items-center gap-3 border-b pb-3">
+                <li key={idx} className="bg-gray-100 p-3 rounded-md shadow-sm flex gap-3 items-center">
                   {item.imgSrc ? (
                     <Image
                       src={item.imgSrc}
                       alt={item.name}
-                      width={50}
-                      height={50}
+                      width={60}
+                      height={60}
                       className="rounded-md object-cover w-14 h-14"
                     />
                   ) : (
-                    <div className="w-14 h-14 bg-gray-200 flex items-center justify-center text-[10px] text-gray-500 rounded-md">
+                    <div className="w-14 h-14 bg-gray-300 flex items-center justify-center text-xs text-gray-600 rounded-md">
                       No Image
                     </div>
                   )}
                   <div className="flex-1">
-                    <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-gray-600">PKR {item.price}</p>
+                    <p className="font-semibold text-sm line-clamp-1">{item.name}</p>
+                    <p className="text-xs text-gray-500 mt-1">{item.price} PKR</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => decreaseQuantity(idx)}
+                        className="px-2 py-1 bg-white border rounded-md text-sm"
+                      >
+                        -
+                      </button>
+                      <span className="text-sm">{item.quantity || 1}</span>
+                      <button
+                        onClick={() => increaseQuantity(idx)}
+                        className="px-2 py-1 bg-white border rounded-md text-sm"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button onClick={() => removeFromCart(idx)} className="text-red-500 text-xs mt-2 hover:underline">
+                      Remove
+                    </button>
                   </div>
-                  <button onClick={() => removeFromCart(idx)} className="text-red-500 hover:underline">Remove</button>
                 </li>
               ))}
             </ul>
+
             <div className="mt-6 border-t pt-4 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-700">Subtotal:</span>
-                <span className="font-medium">PKR {subtotal}</span>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-700">Subtotal</span>
+                <span className="font-medium">{subtotal} PKR</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700">Delivery:</span>
-                <span className="font-medium">PKR {DELIVERY_CHARGE}</span>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-700">Delivery</span>
+                <span className="font-medium">{DELIVERY_CHARGE} PKR (expected)</span>
               </div>
-              <div className="flex justify-between text-lg font-bold border-t pt-2">
-                <span>Total:</span>
-                <span>PKR {grandTotal}</span>
+              <div className="flex justify-between text-base font-bold border-t pt-2">
+                <span>Total</span>
+                <span>{grandTotal.toFixed(2)} PKR</span>
               </div>
             </div>
+
             <button
-              className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium"
+              className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold"
               onClick={() => {
                 setShowCheckoutForm(true);
                 setShowCart(false);
               }}
             >
-              Proceed to Checkout
+              Checkout
             </button>
           </>
         )}
       </div>
+
 
       {showCheckoutForm && (
         <>

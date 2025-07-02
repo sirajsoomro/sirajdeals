@@ -20,7 +20,6 @@ export default function ProductPage() {
     if (quantity > 1) setQuantity((prev) => prev - 1);
   };
 
-  // Dummy cart data for single product checkout
   const DELIVERY_CHARGE = 300;
   const subtotal = price * quantity;
   const grandTotal = subtotal + DELIVERY_CHARGE;
@@ -28,7 +27,6 @@ export default function ProductPage() {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    // Load initial item into cartItems for email
     setCartItems([
       {
         name,
