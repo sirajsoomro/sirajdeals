@@ -105,26 +105,32 @@ const NavbarAndProducts = () => {
   return (
     <>
       <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
-        <div className="w-[95%] mx-auto flex flex-col sm:flex-row items-center justify-between p-3 gap-3 sm:gap-0">
-          <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-14 w-9" />
-            <span className="text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
-          </div>
+  <div className="w-[95%] mx-auto flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 gap-2 sm:gap-0">
+    {/* Logo + Brand */}
+    <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+      <div className="flex items-center gap-2">
+        <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-10 w-8 sm:h-14 sm:w-9" />
+        <span className="text-xl sm:text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
+      </div>
+    </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="textplace border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
-            />
-            <button className="bg-blue-400 text-black px-4 py-3 rounded-lg hover:bg-gray-200 duration-300 ease-in hidden sm:block">
-              Price Filter
-            </button>
-          </div>
-        </div>
-      </nav>
+    {/* Search + Filter */}
+    <div className="flex items-center gap-2 w-full sm:w-auto">
+      <input
+        type="text"
+        placeholder="Search products..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="textplace border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
+      />
+      {/* Hide filter button on mobile */}
+      <button className="hidden sm:block bg-blue-400 text-black px-4 py-2 rounded-lg hover:bg-gray-200 duration-300 ease-in">
+        Price Filter
+      </button>
+    </div>
+  </div>
+</nav>
+
       <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
         {filteredProducts.map((product) => (
           <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
