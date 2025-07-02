@@ -1,55 +1,61 @@
-"use client"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import { useState, useEffect, useMemo } from "react"
-import { collection, getDocs } from "firebase/firestore"
-import { db } from "@/lib/firebase"
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import { useState, useEffect, useMemo } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  imgSrc: string
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imgSrc: string;
 }
 
 const NavbarAndProducts = () => {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [cartItems, setCartItems] = useState<Product[]>([])
-  const [showCart, setShowCart] = useState(false)
-  const [showCheckoutForm, setShowCheckoutForm] = useState(false)
-  const [products, setProducts] = useState<Product[]>([])
+  const [searchQuery, setSearchQuery] = useState("");
+  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [showCart, setShowCart] = useState(false);
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const DELIVERY_CHARGE = 200
-
-  useEffect(() => {
-    const stored = localStorage.getItem("cartItems")
-    if (stored) setCartItems(JSON.parse(stored))
-  }, [])
+  const DELIVERY_CHARGE = 200;
 
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems))
-  }, [cartItems])
+    const stored = localStorage.getItem("cartItems");
+    if (stored) setCartItems(JSON.parse(stored));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const snapshot = await getDocs(collection(db, "products"))
-      const list = snapshot.docs.map(doc => {
-        const data = doc.data() as any
+      const snapshot = await getDocs(collection(db, "products"));
+      const list: Product[] = snapshot.docs.map((doc) => {
+        const data = doc.data() as {
+          name: string;
+          description: string;
+          price: number;
+          image: string;
+        };
         return {
           id: doc.id,
           name: data.name,
           description: data.description,
           price: data.price,
-          imgSrc: data.image || ""
-        } as Product
-      })
-      setProducts(list)
-    }
-    fetchProducts()
-  }, [])
+          imgSrc: data.image || "",
+        };
+      });
+      setProducts(list);
+    };
+    fetchProducts();
+  }, []);
+
+  // 👇 rest of your component remains the same
+
 
   const filteredProducts = useMemo(() => {
     return products.filter(product =>
@@ -94,50 +100,50 @@ const NavbarAndProducts = () => {
       </nav>
 
 
-      <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
-        {filteredProducts.map((product) => (
-          <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
-            <div className="flex-grow">
-              <div className="flex justify-center mb-4">
-                <div className="w-[200] h-[180px] relative overflow-hidden rounded-md">
-                  {product.imgSrc ? (
-                    <Image
-                      src={product.imgSrc}
-                      alt={product.name}
-                      width={100}
-                      height={180}
-                      layout="responsive"
-                      objectFit="contain"
-                      className="rounded-md w-28"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded-md">
-                      No Image
-                    </div>
-                  )}
-                </div>
+<div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
+  {filteredProducts.map((product) => (
+    <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
+      <div className="flex-grow">
+        <div className="flex justify-center mb-4">
+          <div className="w-[200] h-[180px] relative overflow-hidden rounded-md">
+            {product.imgSrc ? (
+               <Image
+      src={product.imgSrc}
+      alt={product.name}
+      width={100}
+      height={180}
+      layout="responsive"
+      objectFit="contain"
+      className="rounded-md w-28"
+    />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded-md">
+                No Image
               </div>
-              <h2 className="text-white font-bold text-lg text-center">{product.name}</h2>
-              <p className="text-sm text-gray-100 text-center mt-2 line-clamp-2">{product.description}</p>
-              <p className="text-orange-400 font-bold text-lg mt-2 text-center">PKR: {product.price}</p>
-            </div>
-            <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-              <Link
-                href={`/product/${encodeURIComponent(product.name)}_${product.price}_${encodeURIComponent(product.description)}_${encodeURIComponent(product.imgSrc)}`}
-                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
-              >
-                Details
-              </Link>
-              <button
-                onClick={() => addToCart(product)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto"
-              >
-                Add to Cart
-              </button>
-            </div>
+            )}
           </div>
-        ))}
+        </div>
+        <h2 className="text-white font-bold text-lg text-center">{product.name}</h2>
+        <p className="text-sm text-gray-100 text-center mt-2 line-clamp-2">{product.description}</p>
+        <p className="text-orange-400 font-bold text-lg mt-2 text-center">PKR: {product.price}</p>
       </div>
+      <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+        <Link
+          href={`/product/${encodeURIComponent(product.name)}_${product.price}_${encodeURIComponent(product.description)}_${encodeURIComponent(product.imgSrc)}`}
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
+        >
+          Details
+        </Link>
+        <button
+          onClick={() => addToCart(product)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto"
+        >
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
 
       <button
         onClick={() => setShowCart(true)}

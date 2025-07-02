@@ -1,6 +1,8 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import Image from "next/image";
+
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -42,8 +44,14 @@ export default function ProductPage() {
     <>
       <div className="min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden break-words w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl w-full bg-[#3A222F] rounded-2xl p-8 shadow-xl">
-          <div className="w-full">
-            <img src={imgSrc} alt={name} className="w-full h-[400px] object-contain rounded" />
+          <div className="w-full h-[400px] relative">
+            <Image
+              src={imgSrc}
+              alt={name}
+              fill
+              className="object-contain rounded"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </div>
           <div className="flex flex-col justify-center space-y-4">
             <h1 className="text-3xl font-bold text-white">{name}</h1>

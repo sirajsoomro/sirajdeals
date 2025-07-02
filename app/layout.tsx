@@ -12,6 +12,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const metadata: Metadata = {
+  title: "Sirajdeals-web",
+  icons: {
+    icon: "/logo.png",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logo.png" sizes="any" type="image/png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -27,10 +37,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-export const metadata = {
-  title: "Sirajdeals-web",
-  icons: {
-    icon: "/logo.png",
-  },
-};
