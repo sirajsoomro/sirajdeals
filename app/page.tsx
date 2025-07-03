@@ -101,31 +101,28 @@ const NavbarAndProducts = () => {
   const grandTotal = subtotal + DELIVERY_CHARGE;
   return (
     <>
-  <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
-  <div className="w-[95%] mx-auto flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 gap-2 sm:gap-0">
-    <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-      <div className="flex items-center gap-2">
-        <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-10 w-8 sm:h-14 sm:w-9" />
-        <span className="text-xl sm:text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
-      </div>
-    </div>
-    <div className="flex items-center gap-2 w-full sm:w-auto">
-      <input
-        type="text"
-        placeholder="Search products..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="textplace border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
-      />
-      <button className="hidden sm:block bg-blue-400 text-black px-4 py-2 rounded-lg hover:bg-gray-200 duration-300 ease-in">
-        Price Filter
-      </button>
-    </div>
-  </div>
-</nav>
-
-
-
+      <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+        <div className="w-[95%] mx-auto flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 gap-2 sm:gap-0">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+            <div className="flex items-center gap-2">
+              <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-10 w-8 sm:h-14 sm:w-9" />
+              <span className="text-xl sm:text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="textplace border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
+            />
+            <button className="hidden sm:block bg-blue-400 text-black px-4 py-3 rounded-lg hover:bg-gray-200 duration-300 ease-in">
+              Price Filter
+            </button>
+          </div>
+        </div>
+      </nav>
       <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
         {filteredProducts.map((product) => (
           <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
@@ -170,7 +167,6 @@ const NavbarAndProducts = () => {
           </div>
         ))}
       </div>
-
       <button
         onClick={() => setShowCart(true)}
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 text-white px-5 py-3 rounded-full shadow-lg border-4 border-white hover:scale-105 transition-transform duration-300"
@@ -185,7 +181,6 @@ const NavbarAndProducts = () => {
           </span>
         )}
       </button>
-
       <div className={`fixed top-0 right-0 h-full w-full sm:w-[350px] bg-white shadow-lg z-50 p-6 overflow-y-auto transition-transform duration-300 ${showCart ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Your Cart</h2>
@@ -215,30 +210,23 @@ const NavbarAndProducts = () => {
                     <p className="font-semibold text-sm line-clamp-1">{item.name}</p>
                     <p className="text-xs text-gray-500 mt-1">{item.price} PKR</p>
                     {/* Quantity Controls */}
-<div className="flex items-center gap-2 mt-2">
-  <button
-    onClick={() => decreaseQuantity(idx)}
-    className="px-2 py-1 bg-white border rounded-md text-sm"
-  >
-    -
-  </button>
-  <span className="text-sm">{item.quantity || 1}</span>
-  <button
-    onClick={() => increaseQuantity(idx)}
-    className="px-2 py-1 bg-white border rounded-md text-sm"
-  >
-    +
-  </button>
-</div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => decreaseQuantity(idx)}
+                        className="px-2 py-1 bg-white border rounded-md text-sm"
+                      >-</button>
+                      <span className="text-sm">{item.quantity || 1}</span>
+                      <button
+                        onClick={() => increaseQuantity(idx)}
+                        className="px-2 py-1 bg-white border rounded-md text-sm"
+                      >+</button>
+                    </div>
 
-                    <button onClick={() => removeFromCart(idx)} className="text-red-500 text-xs mt-2 hover:underline">
-                      Remove
-                    </button>
+                    <button onClick={() => removeFromCart(idx)} className="text-red-500 text-xs mt-2 hover:underline">Remove</button>
                   </div>
                 </li>
               ))}
             </ul>
-
             <div className="mt-6 border-t pt-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-700">Subtotal</span>
