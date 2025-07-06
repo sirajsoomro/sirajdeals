@@ -4,8 +4,7 @@ import { db } from "@/lib/firebase";
 import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 const Portal = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);  const [products, setProducts] = useState([]);
   const [editProductId, setEditProductId] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
