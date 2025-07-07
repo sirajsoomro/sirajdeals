@@ -1,4 +1,3 @@
-
 import nodemailer from "nodemailer";
 
 export async function POST(req) {
@@ -35,23 +34,9 @@ export async function POST(req) {
 
   try {
     await transporter.sendMail(mailOptions);
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {
     console.error("Email send failed:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message,
-        full: JSON.stringify(error), // optional: full error object
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ success: false, error: error.message }), { status: 500 });
   }
 }
-

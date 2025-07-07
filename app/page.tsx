@@ -11,7 +11,7 @@ interface Product {
   description: string;
   price: number;
   imgSrc: string;
-  quantity?: number; // Optional quantity
+  quantity?: number;
 }
 
 const NavbarAndProducts = () => {
@@ -20,6 +20,10 @@ const NavbarAndProducts = () => {
   const [showCart, setShowCart] = useState(false);
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(Infinity);
+  const [showPriceFilter, setShowPriceFilter] = useState(false);
 
   const DELIVERY_CHARGE = 200;
 
@@ -56,11 +60,14 @@ const NavbarAndProducts = () => {
   }, []);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery, products]);
+    return products.filter((product) => {
+      const matchesSearch =
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
+      return matchesSearch && matchesPrice;
+    });
+  }, [searchQuery, minPrice, maxPrice, products]);
 
   const addToCart = (product: Product) => {
     setCartItems((prev) => {
@@ -99,6 +106,7 @@ const NavbarAndProducts = () => {
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * (item.quantity || 1), 0);
   const grandTotal = subtotal + DELIVERY_CHARGE;
+
   return (
     <>
       <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
@@ -109,7 +117,8 @@ const NavbarAndProducts = () => {
               <span className="text-xl sm:text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+
+          <div className="flex items-center gap-2 w-full sm:w-auto relative">
             <input
               type="text"
               placeholder="Search products..."
@@ -117,9 +126,46 @@ const NavbarAndProducts = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="textplace border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
             />
-            <button className="hidden sm:block bg-blue-400 text-black px-4 py-3 rounded-lg hover:bg-gray-200 duration-300 ease-in">
-              Price Filter
-            </button>
+
+            <div className="relative">
+              <button
+                onClick={() => setShowPriceFilter(!showPriceFilter)}
+                className="hidden sm:block bg-blue-400 text-black px-4 py-3 rounded-lg hover:bg-gray-200 duration-300 ease-in"
+              >
+                Price Filter
+              </button>
+
+              {showPriceFilter && (
+                <div className="absolute top-14 right-0 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 w-64">
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700">Min Price</label>
+                    <input
+                      type="number"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(Number(e.target.value))}
+                      className="w-full border border-gray-300 rounded px-2 py-1 mt-1 text-sm"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700">Max Price</label>
+                    <input
+                      type="number"
+                      value={maxPrice === Infinity ? "" : maxPrice}
+                      onChange={(e) => setMaxPrice(Number(e.target.value) || Infinity)}
+                      className="w-full border border-gray-300 rounded px-2 py-1 mt-1 text-sm"
+                      placeholder="10000"
+                    />
+                  </div>
+                  <button
+                    onClick={() => setShowPriceFilter(false)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded w-full hover:bg-blue-600 transition"
+                  >
+                    Apply Filter
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
