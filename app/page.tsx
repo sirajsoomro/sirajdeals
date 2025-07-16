@@ -126,7 +126,6 @@ const NavbarAndProducts = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="textplace border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
             />
-
             <div className="relative">
               <button
                 onClick={() => setShowPriceFilter(!showPriceFilter)}
