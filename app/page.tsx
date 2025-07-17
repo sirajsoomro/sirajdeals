@@ -36,28 +36,28 @@ const NavbarAndProducts = () => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const snapshot = await getDocs(collection(db, "products"));
-      const list: Product[] = snapshot.docs.map((doc) => {
-        const data = doc.data() as {
-          name: string;
-          description: string;
-          price: number;
-          image: string;
-        };
-        return {
-          id: doc.id,
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          imgSrc: data.image || "",
-        };
-      });
-      setProducts(list);
-    };
-    fetchProducts();
-  }, []);
+useEffect(() => {
+  const fetchProducts = async () => {
+    const snapshot = await getDocs(collection(db, "products"));
+    const list: Product[] = snapshot.docs.map((doc) => {
+      const data = doc.data() as {
+        name: string;
+        description: string;
+        price: number;
+        images: string[]; // 👈 use images array now
+      };
+      return {
+        id: doc.id,
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        imgSrc: data.images?.[0] || "", // 👈 use first image from array
+      };
+    });
+    setProducts(list);
+  };
+  fetchProducts();
+}, []);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -169,49 +169,48 @@ const NavbarAndProducts = () => {
         </div>
       </nav>
       <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
-        {filteredProducts.map((product) => (
-          <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
-            <div className="flex-grow">
-              <div className="flex justify-center mb-4">
-                <div className="w-[200] h-[180px] relative overflow-hidden rounded-md">
-                  {product.imgSrc ? (
-                    <Image
-                      src={product.imgSrc}
-                      alt={product.name}
-                      width={100}
-                      height={180}
-                      layout="responsive"
-                      objectFit="contain"
-                      className="rounded-md w-28"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded-md">
-                      No Image
-                    </div>
-                  )}
-                </div>
+  {filteredProducts.map((product) => (
+    <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
+      <div className="flex-grow">
+        <div className="flex justify-center mb-4">
+          <div className="w-[200px] h-[180px] relative overflow-hidden rounded-md">
+            {product.imgSrc ? (
+              <Image
+                src={product.imgSrc}
+                alt={product.name}
+                fill
+                className="object-contain rounded-md"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded-md">
+                No Image
               </div>
-              <h2 className="text-white font-bold text-lg text-center">{product.name}</h2>
-              <p className="text-sm text-gray-100 text-center mt-2 line-clamp-2">{product.description}</p>
-              <p className="text-orange-400 font-bold text-lg mt-2 text-center">PKR: {product.price}</p>
-            </div>
-            <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-              <Link
-                href={`/product/${encodeURIComponent(product.name)}_${product.price}_${encodeURIComponent(product.description)}_${encodeURIComponent(product.imgSrc)}`}
-                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
-              >
-                Details
-              </Link>
-              <button
-                onClick={() => addToCart(product)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto"
-              >
-                Add to Cart
-              </button>
-            </div>
+            )}
           </div>
-        ))}
+        </div>
+        <h2 className="text-white font-bold text-lg text-center">{product.name}</h2>
+        <p className="text-sm text-gray-100 text-center mt-2 line-clamp-2">{product.description}</p>
+        <p className="text-orange-400 font-bold text-lg mt-2 text-center">PKR: {product.price}</p>
       </div>
+      <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+        <Link
+  href={`/product/${product.id}`}
+  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
+>
+  Details
+</Link>
+
+        <button
+          onClick={() => addToCart(product)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto"
+        >
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
       <button
         onClick={() => setShowCart(true)}
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 text-white px-5 py-3 rounded-full shadow-lg border-4 border-white hover:scale-105 transition-transform duration-300"
