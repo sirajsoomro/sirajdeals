@@ -168,14 +168,16 @@ useEffect(() => {
           </div>
         </div>
       </nav>
-    <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
+<div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-10 px-4">
   {filteredProducts.map((product) => (
     <div
       key={product.id}
-      className="w-full max-w-[280px] mx-auto h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col"
+      className="w-full max-w-[260px] mx-auto rounded-xl p-4 bg-[#3A222F] shadow-lg flex flex-col justify-between"
     >
-      <div className="flex-grow">
-        <div className="flex justify-center mb-4">
+      {/* Image + Details */}
+      <div className="flex flex-col flex-grow">
+        {/* Product Image */}
+        <div className="flex justify-center mb-3">
           <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
             {product.imgSrc ? (
               <Image
@@ -192,21 +194,28 @@ useEffect(() => {
             )}
           </div>
         </div>
-        <h2 className="text-white font-bold text-lg text-center">{product.name}</h2>
-        <p className="text-sm text-gray-100 text-center mt-2 line-clamp-2">{product.description}</p>
-        <p className="text-orange-400 font-bold text-lg mt-2 text-center">PKR: {product.price}</p>
+
+        {/* Product Text */}
+        <div className="flex flex-col justify-between min-h-[100px]">
+          <h2 className="text-white font-bold text-base text-center leading-tight">{product.name}</h2>
+          <p className="text-xs text-gray-100 text-center mt-1 line-clamp-2 leading-snug">{product.description}</p>
+        </div>
+
+        {/* Price */}
+        <p className="text-orange-400 font-bold text-base mt-2 text-center">PKR: {product.price}</p>
       </div>
-      <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+
+      {/* Buttons */}
+      <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-3">
         <Link
           href={`/product/${product.id}`}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
+          className="bg-green-500 text-white text-sm px-3 py-1.5 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
         >
           Details
         </Link>
-
         <button
           onClick={() => addToCart(product)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto"
+          className="bg-blue-500 text-white text-sm px-3 py-1.5 rounded-md hover:bg-blue-600 w-full sm:w-auto"
         >
           Add to Cart
         </button>
