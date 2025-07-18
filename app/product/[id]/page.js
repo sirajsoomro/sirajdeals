@@ -147,7 +147,7 @@ import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const id = params?.id?.toString(); // Ensure it's a string
+  const id = params?.id?.toString();
   const [product, setProduct] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -193,16 +193,19 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl w-full bg-[#3A222F] rounded-2xl p-6 sm:p-8 shadow-lg">
 
           {/* Image Slider */}
-          <div className="relative w-full h-80 sm:h-[400px] mx-auto overflow-hidden rounded-xl">
+          <div className="relative w-full h-80 sm:h-[420px] bg-white rounded-xl overflow-hidden shadow-lg">
             {images.length > 0 ? (
-              <Image
-                src={images[currentIndex]}
-                alt={product.name}
-                fill
-                className="object-contain rounded-xl"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={images[currentIndex]}
+                  alt={product.name}
+                  fill
+                  className="object-contain p-4 sm:p-6"
+                  priority
+                />
+              </div>
             ) : (
-              <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-gray-700">
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-500">
                 No Image
               </div>
             )}
@@ -211,17 +214,17 @@ export default function ProductDetailPage() {
               <>
                 <button
                   onClick={prevSlide}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 p-2 rounded-full text-white z-10"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 p-2 rounded-full text-white"
                 >
                   <FiChevronLeft size={24} />
                 </button>
                 <button
                   onClick={nextSlide}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 p-2 rounded-full text-white z-10"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 p-2 rounded-full text-white"
                 >
                   <FiChevronRight size={24} />
                 </button>
-                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-sm px-2 py-1 rounded-full">
+                <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
                   {currentIndex + 1} / {images.length}
                 </div>
               </>
