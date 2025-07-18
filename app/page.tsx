@@ -44,14 +44,14 @@ useEffect(() => {
         name: string;
         description: string;
         price: number;
-        images: string[]; // 👈 use images array now
+        images: string[]; 
       };
       return {
         id: doc.id,
         name: data.name,
         description: data.description,
         price: data.price,
-        imgSrc: data.images?.[0] || "", // 👈 use first image from array
+        imgSrc: data.images?.[0] || "",
       };
     });
     setProducts(list);
@@ -168,18 +168,21 @@ useEffect(() => {
           </div>
         </div>
       </nav>
-      <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
+    <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-14 px-6">
   {filteredProducts.map((product) => (
-    <div key={product.id} className="max-w-xs w-full h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col">
+    <div
+      key={product.id}
+      className="w-full max-w-[280px] mx-auto h-full rounded-xl p-6 bg-[#3A222F] shadow-lg flex flex-col"
+    >
       <div className="flex-grow">
         <div className="flex justify-center mb-4">
-          <div className="w-[200px] h-[180px] relative overflow-hidden rounded-md">
+          <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
             {product.imgSrc ? (
               <Image
                 src={product.imgSrc}
                 alt={product.name}
                 fill
-                className="object-contain rounded-md"
+                className="object-cover rounded-md"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
             ) : (
@@ -195,11 +198,11 @@ useEffect(() => {
       </div>
       <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
         <Link
-  href={`/product/${product.id}`}
-  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
->
-  Details
-</Link>
+          href={`/product/${product.id}`}
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
+        >
+          Details
+        </Link>
 
         <button
           onClick={() => addToCart(product)}
@@ -211,6 +214,7 @@ useEffect(() => {
     </div>
   ))}
 </div>
+
       <button
         onClick={() => setShowCart(true)}
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 text-white px-5 py-3 rounded-full shadow-lg border-4 border-white hover:scale-105 transition-transform duration-300"
@@ -333,7 +337,7 @@ useEffect(() => {
                     });
 
                     if (res.ok) {
-                      alert("Order place hogaya aur email send hogayi!");
+                      alert("📦 Shukriya! Aapka order receive ho gaya hai.Order confirm karne ke liye hamari team jald hi aapko WhatsApp par message karegi.Baraye meherbani WhatsApp par reply kar ke order confirm karein.Team Siraj Deals");
                       setShowCheckoutForm(false);
                       setCartItems([]);
                       localStorage.removeItem("cartItems");
