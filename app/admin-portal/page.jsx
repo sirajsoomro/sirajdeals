@@ -239,10 +239,11 @@
 
 // export default Portal;
 
-
 "use client";
 import React, { useEffect, useState } from 'react';
-import { db } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged, signOut } from "firebase/auth"; // ✅ logout ke liye import
+import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 const Portal = () => {
@@ -251,10 +252,32 @@ const Portal = () => {
   const [editProductId, setEditProductId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  const router = useRouter();
+
+  // ✅ Check for login
   useEffect(() => {
-    fetchProducts();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      } else {
+        fetchProducts();
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   const fetchProducts = async () => {
     const snapshot = await getDocs(collection(db, "products"));
@@ -353,6 +376,11 @@ const Portal = () => {
     }
   };
 
+  if (loading) {
+    return <div className="p-6 text-xl">Loading...</div>;
+  }
+
+
   return (
     <div className='flex'>
       <div className='w-96 bg-amber-500'>
@@ -360,6 +388,9 @@ const Portal = () => {
         <div className='mt-5 ml-6'>
           <button className='text-2xl cursor-pointer text-black'>Product</button><br />
           <button className='mt-3 cursor-pointer text-2xl text-black'>Setting</button>
+           <button onClick={handleLogout} className="text-2xl cursor-pointer text-red-600 mt-6">
+            Logout
+          </button>
         </div>
       </div>
 

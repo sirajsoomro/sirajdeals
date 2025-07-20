@@ -109,65 +109,84 @@ useEffect(() => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
-        <div className="w-[95%] mx-auto flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 gap-2 sm:gap-0">
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-            <div className="flex items-center gap-2">
-              <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-10 w-8 sm:h-14 sm:w-9" />
-              <span className="text-xl sm:text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
-            </div>
-          </div>
+     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+  <div className="w-[95%] mx-auto flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 gap-2 sm:gap-0">
+    
+    {/* Logo Section */}
+    <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+      <div className="flex items-center gap-2">
+        <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-10 w-8 sm:h-14 sm:w-9" />
+        <span className="text-xl sm:text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
+      </div>
+    </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto relative">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="textplace border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-white-500"
-            />
-            <div className="relative">
-              <button
-                onClick={() => setShowPriceFilter(!showPriceFilter)}
-                className="hidden sm:block bg-blue-400 text-black px-4 py-3 rounded-lg hover:bg-gray-200 duration-300 ease-in"
-              >
-                Price Filter
-              </button>
-
-              {showPriceFilter && (
-                <div className="absolute top-14 right-0 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 w-64">
-                  <div className="mb-3">
-                    <label className="block text-sm font-medium text-gray-700">Min Price</label>
-                    <input
-                      type="number"
-                      value={minPrice}
-                      onChange={(e) => setMinPrice(Number(e.target.value))}
-                      className="w-full border border-gray-300 rounded px-2 py-1 mt-1 text-sm"
-                      placeholder="0"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="block text-sm font-medium text-gray-700">Max Price</label>
-                    <input
-                      type="number"
-                      value={maxPrice === Infinity ? "" : maxPrice}
-                      onChange={(e) => setMaxPrice(Number(e.target.value) || Infinity)}
-                      className="w-full border border-gray-300 rounded px-2 py-1 mt-1 text-sm"
-                      placeholder="10000"
-                    />
-                  </div>
-                  <button
-                    onClick={() => setShowPriceFilter(false)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded w-full hover:bg-blue-600 transition"
-                  >
-                    Apply Filter
-                  </button>
-                </div>
-              )}
+    {/* Search & Filter */}
+    <div className="flex items-center gap-2 w-full sm:w-auto relative">
+      
+      {/* Search Bar with Icon - wider version */}
+      <div className="relative w-full sm:w-80">
+        <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+          <svg
+            className="w-6 h-6 text-gray-500"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+          </svg>
+        </span>
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 pr-5 py-[13px] text-whitexsaazx border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-white-500"
+        />
+      </div>
+      <div className="relative">
+        <button
+          onClick={() => setShowPriceFilter(!showPriceFilter)}
+          className="hidden sm:block bg-blue-400 text-black px-4 py-3 rounded-lg hover:bg-gray-200 duration-300 ease-in"
+        >
+          Price Filter
+        </button>
+        {showPriceFilter && (
+          <div className="absolute top-14 right-0 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 w-64">
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700">Min Price</label>
+              <input
+                type="number"
+                value={minPrice}
+                onChange={(e) => setMinPrice(Number(e.target.value))}
+                className="w-full border border-gray-300 rounded px-2 py-1 mt-1 text-sm"
+                placeholder="0"
+              />
             </div>
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700">Max Price</label>
+              <input
+                type="number"
+                value={maxPrice === Infinity ? "" : maxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value) || Infinity)}
+                className="w-full border border-gray-300 rounded px-2 py-1 mt-1 text-sm"
+                placeholder="10000"
+              />
+            </div>
+            <button
+              onClick={() => setShowPriceFilter(false)}
+              className="bg-blue-500 text-white px-3 py-1 rounded w-full hover:bg-blue-600 transition"
+            >
+              Apply Filter
+            </button>
           </div>
-        </div>
-      </nav>
+        )}
+      </div>
+    </div>
+  </div>
+</nav>
+
 <div className="pt-28 w-full max-w-screen-xl m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-10 px-4">
   {filteredProducts.map((product) => (
     <div
