@@ -116,7 +116,7 @@ useEffect(() => {
     <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
       <div className="flex items-center gap-2">
         <Image src="/logo.png" alt="Logo" width={36} height={56} className="h-10 w-8 sm:h-14 sm:w-9" />
-        <span className="text-xl sm:text-3xl font-bold text-pink-600">SIRAJ DEALS</span>
+        <span className="text-xl sm:text-3xl font-bold text-pink-600"></span>
       </div>
     </div>
 

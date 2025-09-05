@@ -241,9 +241,7 @@
 
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useRouter } from "next/navigation";
-import { onAuthStateChanged, signOut } from "firebase/auth"; // ✅ logout ke liye import
-import { auth, db } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 const Portal = () => {
@@ -252,33 +250,8 @@ const Portal = () => {
   const [editProductId, setEditProductId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  const router = useRouter();
-
-  // ✅ Check for login
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/login");
-      } else {
-        fetchProducts();
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.push('/login');
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
+  // ✅ Products fetch
   const fetchProducts = async () => {
     const snapshot = await getDocs(collection(db, "products"));
     const productList = snapshot.docs.map((doc) => ({
@@ -288,6 +261,11 @@ const Portal = () => {
     setProducts(productList);
   };
 
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // ✅ Delete product
   const deleteProduct = async (id) => {
     try {
       await deleteDoc(doc(db, "products", id));
@@ -298,6 +276,7 @@ const Portal = () => {
     }
   };
 
+  // ✅ Upload to Cloudinary
   const uploadToCloudinary = async (files) => {
     const urls = [];
 
@@ -323,6 +302,7 @@ const Portal = () => {
     return urls;
   };
 
+  // ✅ Add or Update Product
   const allDeta = async () => {
     const name = document.getElementById('name').value;
     const price = document.getElementById('price').value;
@@ -362,6 +342,7 @@ const Portal = () => {
         alert("Product added!");
       }
 
+      // Reset form
       document.getElementById('name').value = "";
       document.getElementById('price').value = "";
       document.getElementById('discription').value = "";
@@ -376,11 +357,6 @@ const Portal = () => {
     }
   };
 
-  if (loading) {
-    return <div className="p-6 text-xl">Loading...</div>;
-  }
-
-
   return (
     <div className='flex'>
       <div className='w-96 bg-amber-500'>
@@ -388,9 +364,6 @@ const Portal = () => {
         <div className='mt-5 ml-6'>
           <button className='text-2xl cursor-pointer text-black'>Product</button><br />
           <button className='mt-3 cursor-pointer text-2xl text-black'>Setting</button>
-           <button onClick={handleLogout} className="text-2xl cursor-pointer text-red-600 mt-6">
-            Logout
-          </button>
         </div>
       </div>
 
@@ -410,7 +383,9 @@ const Portal = () => {
           }}>
           Add product
         </button>
-        <div className={`fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center ${isOpen ? "flex" : "hidden"}`}>
+
+        {/* Modal */}
+        <div className={`fixed inset-0 bg-black/30 backdrop-blur-md items-center justify-center ${isOpen ? "flex" : "hidden"}`}>
           <div className='bg-white p-6 rounded-lg shadow-lg w-1-2 px-20'>
             <h1 className='text-3xl mt-2 font-bold'>{editProductId ? "Edit Product" : "Add Product"}</h1>
 
@@ -458,6 +433,8 @@ const Portal = () => {
             </div>
           </div>
         </div>
+
+        {/* Product Table */}
         <table className="mt-10 w-full text-left">
           <thead>
             <tr className="bg-gray-200">
